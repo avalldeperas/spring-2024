@@ -42,11 +42,11 @@ public class AlertService {
 
         Optional<User> user = userService.findById(userId);
 
-        if (user.isPresent()) {
-            alert.setUser(user.get());
-        } else {
+        if (user.isEmpty()) {
             throw new IllegalArgumentException("A valid userId parameter is mandatory");
         }
+
+        alert.setUser(user.get());
 
         try {
             // verify the specified product exists in product service
@@ -59,5 +59,13 @@ public class AlertService {
         }
 
         return alertRepository.save(alert);
+    }
+
+    public List<Alert> findAlertsByProductIdAndDate(Long productId, LocalDate from) {
+        return alertRepository.findAlertsByProductIdAndInterval(productId, from);
+    }
+
+    public List<Alert> findAlertsByUserAndInterval(Long userId, LocalDate from, LocalDate to) {
+        return alertRepository.findAlertsByUserAndInterval(userId, from, to);
     }
 }

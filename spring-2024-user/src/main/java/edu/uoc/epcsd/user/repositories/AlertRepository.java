@@ -12,4 +12,6 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
     @Query("select a from Alert a where a.productId = ?1 and a.from <= ?2 and a.to >= ?2")
     List<Alert> findAlertsByProductIdAndInterval(Long productId, LocalDate availableOnDate);
 
+    @Query("select a from Alert a where a.user.id = ?1 and a.from <= ?2 and a.to >= ?3")
+    List<Alert> findAlertsByUserAndInterval(Long userId, LocalDate from, LocalDate to);
 }

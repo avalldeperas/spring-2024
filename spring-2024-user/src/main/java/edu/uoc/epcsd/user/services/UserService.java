@@ -1,5 +1,6 @@
 package edu.uoc.epcsd.user.services;
 
+import edu.uoc.epcsd.user.entities.Alert;
 import edu.uoc.epcsd.user.entities.User;
 import edu.uoc.epcsd.user.repositories.AlertRepository;
 import edu.uoc.epcsd.user.repositories.UserRepository;
@@ -30,14 +31,14 @@ public class UserService {
     }
 
     public User createUser(String email, String password, String fullName, String phoneNumber) {
-
         User user = User.builder().email(email).password(password).fullName(fullName).phoneNumber(phoneNumber).build();
 
         return userRepository.save(user);
     }
 
     public Set<User> getUsersToAlert(Long productId, LocalDate availableOnDate) {
-
-        return alertRepository.findAlertsByProductIdAndInterval(productId, availableOnDate).stream().map(alert -> alert.getUser()).collect(Collectors.toSet());
+        return alertRepository.findAlertsByProductIdAndInterval(productId, availableOnDate).stream()
+                .map(Alert::getUser)
+                .collect(Collectors.toSet());
     }
 }

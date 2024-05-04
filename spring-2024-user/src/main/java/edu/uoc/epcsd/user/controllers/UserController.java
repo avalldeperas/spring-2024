@@ -39,16 +39,22 @@ public class UserController {
     public ResponseEntity<GetUserResponse> getUserById(@PathVariable @NotNull Long userId) {
         log.trace("getUserById");
 
-        return userService.findById(userId).map(user -> ResponseEntity.ok().body(GetUserResponse.fromDomain(user)))
+        return userService.findById(userId)
+                .map(user -> ResponseEntity.ok().body(GetUserResponse.fromDomain(user)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/toAlert")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<GetUserResponse[]> getUsersToAlert(@RequestParam @NotNull Long productId, @RequestParam @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate availableOnDate) {
+    public ResponseEntity<GetUserResponse[]> getUsersToAlert(
+            @RequestParam @NotNull Long productId,
+            @RequestParam @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate availableOnDate
+    ) {
         log.trace("getUsersToAlert");
 
-        return ResponseEntity.ok().body(userService.getUsersToAlert(productId, availableOnDate).stream().map(user -> GetUserResponse.fromDomain(user)).toArray(GetUserResponse[]::new));
+        return ResponseEntity.ok().body(userService.getUsersToAlert(productId, availableOnDate).stream()
+                .map(GetUserResponse::fromDomain)
+                .toArray(GetUserResponse[]::new));
     }
 
     @PostMapping
