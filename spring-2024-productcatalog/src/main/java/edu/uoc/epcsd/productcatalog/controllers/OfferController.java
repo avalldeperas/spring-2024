@@ -1,6 +1,7 @@
 package edu.uoc.epcsd.productcatalog.controllers;
 
 import edu.uoc.epcsd.productcatalog.controllers.dtos.CreateOfferRequest;
+import edu.uoc.epcsd.productcatalog.controllers.dtos.EvaluateOfferRequest;
 import edu.uoc.epcsd.productcatalog.entities.Offer;
 import edu.uoc.epcsd.productcatalog.services.OfferService;
 import lombok.extern.log4j.Log4j2;
@@ -40,6 +41,28 @@ public class OfferController {
                 request.getProductId(),
                 request.getSerialNumber(),
                 request.getEmail()
+        );
+
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{offerId}")
+                .buildAndExpand(offer.getOfferId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(offer.getOfferId());
+    }
+
+    @PatchMapping("/{offerId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Long> evaluateOffer(
+            @PathVariable @NotNull Long offerId,
+            @RequestBody @NotNull EvaluateOfferRequest request
+    ) {
+        log.trace("evaluateOffer - request {}", request);
+
+        Offer offer = offerService.evaluateOffer(
+                offerId,
+                request.getDate(),
+                request.getStatus()
         );
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()

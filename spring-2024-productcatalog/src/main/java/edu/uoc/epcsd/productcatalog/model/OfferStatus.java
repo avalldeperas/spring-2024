@@ -2,5 +2,9 @@ package edu.uoc.epcsd.productcatalog.model;
 
 public enum OfferStatus {
     ACCEPTED,
-    REJECTED
+    REJECTED;
+
+    public boolean isAccepted() {
+        return ACCEPTED == (this);
+    }
 }
