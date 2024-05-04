@@ -4,7 +4,7 @@ import lombok.*;
 
 @Getter
 @Builder
-public class Criteria {
+public class ProductCriteria {
 
     private String name;
     private String description;

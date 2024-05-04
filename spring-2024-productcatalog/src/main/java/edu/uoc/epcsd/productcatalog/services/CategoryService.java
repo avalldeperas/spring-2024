@@ -1,10 +1,12 @@
 package edu.uoc.epcsd.productcatalog.services;
 
 import edu.uoc.epcsd.productcatalog.entities.Category;
+import edu.uoc.epcsd.productcatalog.model.CategoryCriteria;
 import edu.uoc.epcsd.productcatalog.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,11 +31,25 @@ public class CategoryService {
         if (parentId != null) {
             Optional<Category> parent = categoryRepository.findById(parentId);
 
-            if (parent.isPresent()) {
-                category.setParent(parent.get());
-            }
+            parent.ifPresent(category::setParent);
         }
 
         return categoryRepository.save(category);
+    }
+
+    public List<Category> findByCriteria(CategoryCriteria criteria) {
+        if (criteria.getName() != null)  {
+            return categoryRepository.findByNameContaining(criteria.getName());
+        }
+
+        if (criteria.getDescription() != null) {
+            return categoryRepository.findByDescriptionContaining(criteria.getDescription());
+        }
+
+        if (criteria.getParent() != null) {
+            // TODO consulta de seccions/subseccions per secció "pare"
+        }
+
+        return Collections.emptyList();
     }
 }

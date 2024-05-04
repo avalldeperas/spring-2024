@@ -2,6 +2,7 @@ package edu.uoc.epcsd.productcatalog.controllers;
 
 import edu.uoc.epcsd.productcatalog.controllers.dtos.CreateCategoryRequest;
 import edu.uoc.epcsd.productcatalog.entities.Category;
+import edu.uoc.epcsd.productcatalog.model.CategoryCriteria;
 import edu.uoc.epcsd.productcatalog.services.CategoryService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,21 @@ public class CategoryController {
 
         return ResponseEntity.created(uri).body(categoryId);
     }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<Category> findCategoriesByCriteria(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String parent
+    ) {
+        log.debug("findProductsByCriteria - name = {}, description = {}, parent = {}", name, description, parent);
+
+        CategoryCriteria criteria = CategoryCriteria.builder().name(name).description(description).parent(parent).build();
+
+        return categoryService.findByCriteria(criteria);
+    }
+
 
     // TODO: add the code for the missing system operations here:
     // 1. query categories by name

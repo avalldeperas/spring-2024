@@ -3,7 +3,7 @@ package edu.uoc.epcsd.productcatalog.services;
 import edu.uoc.epcsd.productcatalog.entities.Category;
 import edu.uoc.epcsd.productcatalog.entities.Item;
 import edu.uoc.epcsd.productcatalog.entities.OperationalStatus;
-import edu.uoc.epcsd.productcatalog.model.Criteria;
+import edu.uoc.epcsd.productcatalog.model.ProductCriteria;
 import edu.uoc.epcsd.productcatalog.entities.Product;
 import edu.uoc.epcsd.productcatalog.repositories.ProductRepository;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class ProductService {
         return productRepository.findById(productId);
     }
 
-    public List<Product> findProductsByCriteria(Criteria criteria) {
+    public List<Product> findProductsByCriteria(ProductCriteria criteria) {
 
         if (criteria.getName() != null) {
             return productRepository.findByNameContaining(criteria.getName());
