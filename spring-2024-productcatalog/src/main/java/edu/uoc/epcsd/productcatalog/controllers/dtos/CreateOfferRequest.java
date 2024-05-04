@@ -1,13 +1,14 @@
 package edu.uoc.epcsd.productcatalog.controllers.dtos;
 
-import edu.uoc.epcsd.productcatalog.model.OperationalStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public final class UpdateItemRequest {
+public final class CreateOfferRequest {
 
     private final String serialNumber;
-    private final OperationalStatus status;
+    private final String email;
+    private final Long categoryId;
+    private final Long productId;
 }

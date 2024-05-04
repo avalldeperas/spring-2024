@@ -1,6 +1,7 @@
 package edu.uoc.epcsd.productcatalog.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import edu.uoc.epcsd.productcatalog.model.OperationalStatus;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

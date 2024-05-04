@@ -1,5 +1,6 @@
 package edu.uoc.epcsd.productcatalog.entities;
 
+import edu.uoc.epcsd.productcatalog.model.OperationalStatus;
 import lombok.*;
 
 import javax.persistence.*;

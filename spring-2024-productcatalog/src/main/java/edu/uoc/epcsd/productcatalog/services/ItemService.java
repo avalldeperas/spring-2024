@@ -1,7 +1,7 @@
 package edu.uoc.epcsd.productcatalog.services;
 
 import edu.uoc.epcsd.productcatalog.entities.Item;
-import edu.uoc.epcsd.productcatalog.entities.OperationalStatus;
+import edu.uoc.epcsd.productcatalog.model.OperationalStatus;
 import edu.uoc.epcsd.productcatalog.entities.Product;
 import edu.uoc.epcsd.productcatalog.kafka.KafkaConstants;
 import edu.uoc.epcsd.productcatalog.kafka.ProductMessage;

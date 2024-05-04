@@ -1,4 +1,4 @@
-package edu.uoc.epcsd.productcatalog.entities;
+package edu.uoc.epcsd.productcatalog.model;
 
 public enum OperationalStatus {
 
