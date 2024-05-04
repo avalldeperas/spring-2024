@@ -3,6 +3,7 @@ package edu.uoc.epcsd.productcatalog.controllers;
 
 import edu.uoc.epcsd.productcatalog.controllers.dtos.CreateProductRequest;
 import edu.uoc.epcsd.productcatalog.controllers.dtos.GetProductResponse;
+import edu.uoc.epcsd.productcatalog.model.Criteria;
 import edu.uoc.epcsd.productcatalog.entities.Product;
 import edu.uoc.epcsd.productcatalog.services.ProductService;
 import lombok.extern.log4j.Log4j2;
@@ -59,6 +60,22 @@ public class ProductController {
                 .toUri();
 
         return ResponseEntity.created(uri).body(productId);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<Product> findProductsByCriteria(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long category,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) String model
+    ) {
+        log.trace("findProductsByCriteria - name = {}, category = {}", name, category);
+
+        Criteria criteria = Criteria.builder().name(name).categoryId(category).description(description).brand(brand).model(model).build();
+
+        return productService.findProductsByCriteria(criteria);
     }
 
     // TODO: add the code for the missing system operations here:

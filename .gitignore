@@ -1,0 +1,6 @@
+target
+.idea
+*.iml
+spring-2024-productcatalog/target
+spring-2024-notification/target
+spring-2024-user/target
