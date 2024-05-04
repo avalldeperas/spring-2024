@@ -78,9 +78,21 @@ public class ProductController {
         return productService.findProductsByCriteria(criteria);
     }
 
-    // TODO: add the code for the missing system operations here:
-    // 1. remove product (use DELETE HTTP verb). Must remove the associated items
-    // 2. query products by name
-    // 3. query products by category/subcategory
+    /**
+     * // TODO: add the code for the missing system operations here:
+     *      1. remove product (use DELETE HTTP verb). Must remove the associated items
+     *      2. query products by name
+     *      3. query products by category/subcategory
+     * @param productId
+     * @return
+     */
+    @DeleteMapping("/{productId}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Boolean> deleteProduct(@PathVariable Long productId) {
+        log.trace("deleteProduct - productId = {}", productId);
 
+        boolean isSuccess = productService.deleteProduct(productId);
+
+        return new ResponseEntity<>(isSuccess, HttpStatus.OK);
+    }
 }

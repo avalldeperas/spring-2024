@@ -2,6 +2,7 @@ package edu.uoc.epcsd.productcatalog.controllers;
 
 
 import edu.uoc.epcsd.productcatalog.controllers.dtos.CreateItemRequest;
+import edu.uoc.epcsd.productcatalog.controllers.dtos.UpdateItemRequest;
 import edu.uoc.epcsd.productcatalog.entities.Item;
 import edu.uoc.epcsd.productcatalog.services.ItemService;
 import lombok.extern.log4j.Log4j2;
@@ -55,10 +56,22 @@ public class ItemController {
         return ResponseEntity.created(uri).body(serialNumber);
     }
 
-    // TODO: add the code for the missing system operations here:
-    // 1. setOperational
-    //  * use the correct HTTP verb
-    //  * must ensure the item exists
-    //  * if the new status is OPERATIONAL, must send a UNIT_AVAILABLE message to the kafka message queue (see ItemService.createItem method)
+    /**
+     * add the code for the missing system operations here:
+     * 1. setOperational
+     * * use the correct HTTP verb - PATCH
+     * * must ensure the item exists
+     * * if the new status is OPERATIONAL, must send a UNIT_AVAILABLE message to the kafka message queue (see ItemService.createItem method)
+     *
+     * @param updateItemRequest request with operational status
+     * @return ResponseEntity with true if success, false otherwise
+     */
+    @PatchMapping
+    public ResponseEntity<Boolean> updateItem(@RequestBody UpdateItemRequest updateItemRequest) {
+        log.trace("updateItem");
 
+        Item item = itemService.setOperational(updateItemRequest.getSerialNumber(), updateItemRequest.getStatus());
+
+        return ResponseEntity.ok(item != null);
+    }
 }

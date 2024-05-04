@@ -20,7 +20,7 @@ public class Item {
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ItemStatus status;
+    private OperationalStatus status;
 
     @ManyToOne
     private Product product;
