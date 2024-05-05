@@ -8,7 +8,7 @@ import lombok.Getter;
 public final class CreateOfferRequest {
 
     private final String serialNumber;
-    private final String email;
+    private final Long userId;
     private final Long categoryId;
     private final Long productId;
 }

@@ -1,5 +1,6 @@
 package edu.uoc.epcsd.productcatalog.services;
 
+import edu.uoc.epcsd.productcatalog.controllers.dtos.GetUserResponse;
 import edu.uoc.epcsd.productcatalog.entities.*;
 import edu.uoc.epcsd.productcatalog.kafka.KafkaConstants;
 import edu.uoc.epcsd.productcatalog.kafka.ProductMessage;
@@ -8,11 +9,17 @@ import edu.uoc.epcsd.productcatalog.repositories.OfferRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -30,23 +37,21 @@ public class OfferService {
     @Autowired
     private KafkaTemplate<String, ProductMessage> productKafkaTemplate;
 
+    @Value("${userService.getUserById.url}")
+    private String userServiceUrl;
+
     private static final Logger log = LoggerFactory.getLogger(OfferService.class);
 
     public List<Offer> findAll() {
         return offerRepository.findAll();
     }
 
-    public Offer createOffer(Long categoryId, Long productId, String serialNumber, String email) {
-        // TODO is this check necessary? If we are able to find product, doesn't that mean that category exist?
-        Optional<Category> category = categoryService.findById(categoryId);
-        if (category.isEmpty())
-            throw new IllegalArgumentException(String.format("Category id %d does not exist", categoryId));
+    public Offer createOffer(Long categoryId, Long productId, String serialNumber, Long userId) {
+        Long userIdFound = validateUser(userId);
+        Category category = validateCategory(categoryId);
+        Product product = validateProduct(productId);
 
-        Optional<Product> product = productService.findById(productId);
-        if (product.isEmpty())
-            throw new IllegalArgumentException(String.format("Product id %d does not exist", productId));
-
-        Offer offer = buildOffer(category.get(), serialNumber, email, product.get());
+        Offer offer = buildOffer(category, serialNumber, userIdFound, product);
 
         return offerRepository.save(offer);
     }
@@ -68,12 +73,43 @@ public class OfferService {
         return offerRepository.save(offer.get());
     }
 
-    private Offer buildOffer(Category category, String serialNumber, String email, Product product) {
+    public List<Offer> findOffersByUser(Long userId) {
+        return offerRepository.findByUserId(userId);
+    }
+
+    private Offer buildOffer(Category category, String serialNumber, Long userId, Product product) {
         return Offer.builder()
                 .category(category)
                 .product(product)
                 .serialNumber(serialNumber)
-                .email(email)
+                .userId(userId)
                 .build();
+    }
+
+    private Product validateProduct(Long productId) {
+        Optional<Product> product = productService.findById(productId);
+        if (product.isEmpty())
+            throw new IllegalArgumentException(String.format("Product id %d does not exist", productId));
+        return product.get();
+    }
+
+    private Category validateCategory(Long categoryId) {
+        Optional<Category> category = categoryService.findById(categoryId);
+        if (category.isEmpty())
+            throw new IllegalArgumentException(String.format("Category id %d does not exist", categoryId));
+        return category.get();
+    }
+
+    private Long validateUser(Long userId) {
+        ResponseEntity<GetUserResponse> userResponse;
+        try {
+            userResponse = new RestTemplate().getForEntity(userServiceUrl, GetUserResponse.class, userId);
+            return Objects.requireNonNull(userResponse.getBody()).getId();
+        } catch (HttpClientErrorException e) {
+            if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
+                throw new IllegalArgumentException(String.format("User id %d does not exist", userId));
+            }
+        }
+        throw new IllegalArgumentException("User could not be found.");
     }
 }

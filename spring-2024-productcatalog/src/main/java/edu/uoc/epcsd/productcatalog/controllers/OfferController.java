@@ -40,7 +40,7 @@ public class OfferController {
                 request.getCategoryId(),
                 request.getProductId(),
                 request.getSerialNumber(),
-                request.getEmail()
+                request.getUserId()
         );
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -71,5 +71,13 @@ public class OfferController {
                 .toUri();
 
         return ResponseEntity.created(uri).body(offer.getOfferId());
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<Offer> findOffersByUser(@RequestParam @NotNull Long userId) {
+        log.info("findOffersByUser - user id {}", userId);
+
+        return offerService.findOffersByUser(userId);
     }
 }

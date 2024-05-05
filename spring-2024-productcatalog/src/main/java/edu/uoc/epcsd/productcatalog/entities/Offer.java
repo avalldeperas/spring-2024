@@ -21,9 +21,8 @@ public class Offer {
     private Long offerId;
 
     // TODO: User is not in this module. Can this be userId?
-    private String email;
+    private Long userId;
 
-    // TODO: is this needed or can be like Item?
     @ManyToOne
     private Category category;
 
