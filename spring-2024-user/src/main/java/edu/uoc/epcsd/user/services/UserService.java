@@ -31,6 +31,7 @@ public class UserService {
     }
 
     public User createUser(String email, String password, String fullName, String phoneNumber) {
+        // As requested in PRAC1 solution, email must not exist already in database
         validateEmail(email);
 
         User user = User.builder().email(email).password(password).fullName(fullName).phoneNumber(phoneNumber).build();
