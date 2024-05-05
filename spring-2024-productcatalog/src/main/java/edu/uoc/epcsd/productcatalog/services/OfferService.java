@@ -10,11 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -51,7 +50,7 @@ public class OfferService {
         Category category = validateCategory(categoryId);
         Product product = validateProduct(productId);
 
-        Offer offer = buildOffer(category, serialNumber, userIdFound, product);
+        Offer offer = buildOffer(category, product, serialNumber, userIdFound);
 
         return offerRepository.save(offer);
     }
@@ -77,7 +76,7 @@ public class OfferService {
         return offerRepository.findByUserId(userId);
     }
 
-    private Offer buildOffer(Category category, String serialNumber, Long userId, Product product) {
+    private Offer buildOffer(Category category, Product product, String serialNumber, Long userId) {
         return Offer.builder()
                 .category(category)
                 .product(product)
@@ -105,11 +104,8 @@ public class OfferService {
         try {
             userResponse = new RestTemplate().getForEntity(userServiceUrl, GetUserResponse.class, userId);
             return Objects.requireNonNull(userResponse.getBody()).getId();
-        } catch (HttpClientErrorException e) {
-            if (HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
-                throw new IllegalArgumentException(String.format("User id %d does not exist", userId));
-            }
+        } catch (RestClientException e) {
+            throw new IllegalArgumentException(String.format("Could not found the userId %d", userId), e);
         }
-        throw new IllegalArgumentException("User could not be found.");
     }
 }
