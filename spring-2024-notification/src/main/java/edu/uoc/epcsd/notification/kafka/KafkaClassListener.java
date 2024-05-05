@@ -15,7 +15,7 @@ public class KafkaClassListener {
 
     @KafkaListener(topics = KafkaConstants.PRODUCT_TOPIC + KafkaConstants.SEPARATOR + KafkaConstants.UNIT_AVAILABLE, groupId = "group-1")
     void productAvailable(ProductMessage productMessage) {
-        log.info("KafkaClassListener::productAvailable - Product message received: {}", productMessage);
+        log.trace("KafkaClassListener::productAvailable - Product message received: {}", productMessage);
 
         notificationService.notifyProductAvailable(productMessage);
     }

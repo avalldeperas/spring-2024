@@ -71,7 +71,7 @@ public class ProductController {
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String model
     ) {
-        log.info("findProductsByCriteria - name = {}, category = {}, description = {}, brand = {}, model = {}", name, category, description, brand, model);
+        log.trace("findProductsByCriteria - name = {}, category = {}, description = {}, brand = {}, model = {}", name, category, description, brand, model);
 
         ProductCriteria criteria = ProductCriteria.builder().name(name).categoryId(category).description(description).brand(brand).model(model).build();
 

@@ -8,8 +8,4 @@ public enum OfferStatus {
     public boolean isAccepted() {
         return ACCEPTED == (this);
     }
-
-    public boolean isPending() {
-        return PENDING == (this);
-    }
 }

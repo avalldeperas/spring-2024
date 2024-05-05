@@ -37,7 +37,7 @@ public class OfferController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Long> createOffer(@RequestBody @NotNull CreateOfferRequest request) {
-        log.info("createOffer - request {}", request);
+        log.trace("createOffer - request {}", request);
 
         Offer offer = offerService.createOffer(
                 request.getCategoryId(),
@@ -69,12 +69,7 @@ public class OfferController {
                 request.getStatus()
         );
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{offerId}")
-                .buildAndExpand(offer.getOfferId())
-                .toUri();
-
-        return ResponseEntity.created(uri).body(offer.getOfferId());
+        return ResponseEntity.ok(offer.getOfferId());
     }
 
     @GetMapping

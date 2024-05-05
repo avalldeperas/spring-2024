@@ -60,13 +60,16 @@ public class ItemController {
      * Updates item to set its status (operational/non-operational). Ensures that item exists and also that product does
      * not have same status already. If status is OPERATIONAL, a UNIT_AVAILABLE message is sent to the kafka message
      * queue
+     *
      * @param updateItemRequest request with operational status and item serial number to update.
-     * @return ResponseEntity with true if success, false otherwise
+     * @return ResponseEntity with item if success, null otherwise
      */
     @PatchMapping
-    public ResponseEntity<Boolean> updateItem(@RequestBody UpdateItemRequest updateItemRequest) {
+    public ResponseEntity<String> updateItem(@RequestBody UpdateItemRequest updateItemRequest) {
         log.trace("updateItem - request = '{}'", updateItemRequest);
 
-        return ResponseEntity.ok(itemService.setOperational(updateItemRequest.getSerialNumber(), updateItemRequest.getStatus()));
+        Item item = itemService.setOperational(updateItemRequest.getSerialNumber(), updateItemRequest.getStatus());
+
+        return ResponseEntity.ok(item.getSerialNumber());
     }
 }

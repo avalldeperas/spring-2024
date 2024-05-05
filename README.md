@@ -44,7 +44,7 @@
       </ul>
     </li>
     <li><a href="#links-to-tools-libraries-and-used-modules">Links to tools, libraries and used modules</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#additional-considerations">Additional considerations</a></li>
   </ol>
 </details>
 
@@ -227,12 +227,21 @@ as many times as admin requests.
 #### User
 - _createUser_: as requested in PRAC1 solution, a validation has been added to check that email does not exist in database
 before creating a user.
-- _getUsersToAlert_: as discussed in the forum, although this operation uses _findAlertsByProductIdAndInterval_, 
+- _getUsersToAlert_: as discussed in the forum, although this operation uses _findAlerts**ByProductIdAndInterval**_, 
 dates are not a interval but more of a specific date.
 
 #### Alert
-- _findAlertsByProductIdAndDate_: query alerts by product and a specific date, not an interval as discussed in the 
-subject forum.
+- _findAlerts**ByProductIdAndDate**_: query alerts by product and a specific date, not an interval as discussed in the 
+subject forum. This operation reuses same _findAlerts**ByProductIdAndInterval**_ than used in getUsersToAlert operation.
+- _findAlerts**ByUserIdAndInterval**_: query alerts by a given user and an interval of dates (from and to dates). This
+is the only operation that really uses an interval of dates. 
+
+### Notification Microservice
+Used RestTemplate with the userServiceUrl to query the User microservice in order to get the users having an alert for
+the specified product and the actual date (LocalDate.now). 
+Email has been simulated as requested in the exercise with a log like below:
+
+`NotificationService     : Sending an email to user 'Nil Carbonell'... `
 
 <p align="right">(<a href="#top">go up</a>)</p>
 

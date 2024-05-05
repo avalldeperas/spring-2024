@@ -36,7 +36,7 @@ public class ItemService {
         return itemRepository.findBySerialNumber(serialNumber);
     }
 
-    public boolean setOperational(String serialNumber, OperationalStatus status) {
+    public Item setOperational(String serialNumber, OperationalStatus status) {
         Optional<Item> itemOp = findBySerialNumber(serialNumber);
         if (itemOp.isEmpty())
             throw new IllegalArgumentException(String.format("Item serial number '%s' does not exist", serialNumber));
@@ -55,7 +55,7 @@ public class ItemService {
             productKafkaTemplate.send(KafkaConstants.PRODUCT_TOPIC + KafkaConstants.SEPARATOR + KafkaConstants.UNIT_AVAILABLE, message);
         }
 
-        return true;
+        return item;
     }
 
     public Item createItem(Long productId, String serialNumber) {
