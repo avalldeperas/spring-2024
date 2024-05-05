@@ -12,11 +12,8 @@ import lombok.*;
 public final class GetUserResponse {
 
     private Long id;
-
     private String fullName;
-
     private String email;
-
     private String phoneNumber;
 
 }
