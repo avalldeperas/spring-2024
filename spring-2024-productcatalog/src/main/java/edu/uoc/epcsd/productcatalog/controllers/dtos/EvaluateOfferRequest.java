@@ -5,9 +5,11 @@ import edu.uoc.epcsd.productcatalog.model.OfferStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 
 import java.time.LocalDate;
 
+@ToString
 @Getter
 @AllArgsConstructor
 public final class EvaluateOfferRequest {

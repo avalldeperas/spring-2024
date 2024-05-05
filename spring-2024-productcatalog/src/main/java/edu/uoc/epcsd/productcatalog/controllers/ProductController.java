@@ -71,7 +71,7 @@ public class ProductController {
             @RequestParam(required = false) String brand,
             @RequestParam(required = false) String model
     ) {
-        log.trace("findProductsByCriteria - name = {}, category = {}", name, category);
+        log.trace("findProductsByCriteria - name = {}, category = {}, description = {}, brand = {}, model = {}", name, category, description, brand, model);
 
         ProductCriteria criteria = ProductCriteria.builder().name(name).categoryId(category).description(description).brand(brand).model(model).build();
 
@@ -79,20 +79,16 @@ public class ProductController {
     }
 
     /**
-     * // TODO: add the code for the missing system operations here:
-     *      1. remove product (use DELETE HTTP verb). Must remove the associated items
-     *      2. query products by name
-     *      3. query products by category/subcategory
-     * @param productId
-     * @return
+     * Removes product and associated items.
+     *
+     * @param productId product id to remove
+     * @return true success, false otherwise.
      */
     @DeleteMapping("/{productId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Boolean> deleteProduct(@PathVariable Long productId) {
         log.trace("deleteProduct - productId = {}", productId);
 
-        boolean isSuccess = productService.deleteProduct(productId);
-
-        return new ResponseEntity<>(isSuccess, HttpStatus.OK);
+        return new ResponseEntity<>(productService.deleteProduct(productId), HttpStatus.OK);
     }
 }

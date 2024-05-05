@@ -40,6 +40,6 @@ public class NotificationService {
     }
 
     private void sendEmail(GetUserResponse response) {
-        log.trace("Sending an email to user '{}'...", response.getFullName());
+        log.info("Sending an email to user '{}'...", response.getFullName());
     }
 }

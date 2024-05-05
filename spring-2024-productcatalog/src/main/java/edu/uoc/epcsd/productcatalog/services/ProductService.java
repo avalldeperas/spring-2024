@@ -60,12 +60,13 @@ public class ProductService {
 
 
     public Product createProduct(Long categoryId, String name, String description, Double dailyPrice, String brand, String model) {
+        // As requested in PRAC1 solution, adding additional check to not have any product in catalogue with same name.
+        validateProductName(name);
 
         Product product = Product.builder().name(name).description(description).dailyPrice(dailyPrice).brand(brand).model(model).status(OperationalStatus.OPERATIONAL).build();
 
         if (categoryId != null) {
             Optional<Category> category = categoryService.findById(categoryId);
-
             category.ifPresent(product::setCategory);
         }
 
@@ -73,22 +74,26 @@ public class ProductService {
     }
 
     public boolean deleteProduct(Long productId) {
-        Optional<Product> productOp = findById(productId);
-        if (productOp.isEmpty()) {
-            log.trace("Product id {} not found", productId);
-            return false;
-        }
-
-        Product product = productOp.get();
-        List<Item> items = product.getItemList();
-
+        Product product = getProduct(productId);
         product.setStatus(OperationalStatus.NON_OPERATIONAL);
-        // TODO - ensure product does not have any compromised unit in future/current rents?
-        // TODO - ensure that all units are set to non operational as expected?
-        items.forEach(item -> item.setStatus(OperationalStatus.NON_OPERATIONAL));
-        // this would save items too right?
+        // Cannot check that unit is compromised in any current or future rent, as rent service is not implemented in PRAC2.
+        product.getItemList().forEach(item -> item.setStatus(OperationalStatus.NON_OPERATIONAL));
+
         productRepository.save(product);
 
         return true;
+    }
+
+    private void validateProductName(String name) {
+        Optional<Product> product = findProductsByCriteria(ProductCriteria.builder().name(name).build()).stream().findFirst();
+        if (product.isPresent())
+            throw new IllegalArgumentException(String.format("Product name '%s' already exists in catalogue.", name));
+    }
+
+    private Product getProduct(Long productId) {
+        Optional<Product> product = findById(productId);
+        if (product.isEmpty())
+            throw new IllegalArgumentException(String.format("Product id '%d' not found", productId));
+        return product.get();
     }
 }

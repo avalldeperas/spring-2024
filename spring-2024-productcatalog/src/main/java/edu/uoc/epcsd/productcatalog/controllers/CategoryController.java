@@ -47,23 +47,24 @@ public class CategoryController {
         return ResponseEntity.created(uri).body(categoryId);
     }
 
+    /**
+     * Single endpoint that queries categories by different criteria.
+     * @param name category name
+     * @param description category description
+     * @param parent category parent
+     * @return list of categories that matches criteria received.
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Category> findCategoriesByCriteria(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description,
-            @RequestParam(required = false) String parent
+            @RequestParam(required = false) Long parent
     ) {
-        log.debug("findProductsByCriteria - name = {}, description = {}, parent = {}", name, description, parent);
+        log.trace("findCategoriesByCriteria - name = {}, description = {}, parent = {}", name, description, parent);
 
         CategoryCriteria criteria = CategoryCriteria.builder().name(name).description(description).parent(parent).build();
 
         return categoryService.findByCriteria(criteria);
     }
-
-
-    // TODO: add the code for the missing system operations here:
-    // 1. query categories by name
-    // 2. query categories by description
-    // 3. query categories by parent category (must return all categories under the category specified by the id parameter)
 }

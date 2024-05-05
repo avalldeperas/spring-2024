@@ -25,20 +25,15 @@ public class CategoryService {
     }
 
     public Category createCategory(Long parentId, String name, String description) {
-
         Category category = Category.builder().name(name).description(description).build();
 
-        if (parentId != null) {
-            Optional<Category> parent = categoryRepository.findById(parentId);
-
-            parent.ifPresent(category::setParent);
-        }
+        if (parentId != null) categoryRepository.findById(parentId).ifPresent(category::setParent);
 
         return categoryRepository.save(category);
     }
 
     public List<Category> findByCriteria(CategoryCriteria criteria) {
-        if (criteria.getName() != null)  {
+        if (criteria.getName() != null) {
             return categoryRepository.findByNameContaining(criteria.getName());
         }
 
@@ -47,7 +42,7 @@ public class CategoryService {
         }
 
         if (criteria.getParent() != null) {
-            // TODO consulta de seccions/subseccions per secció "pare"
+            return categoryRepository.findByParentId(criteria.getParent());
         }
 
         return Collections.emptyList();
