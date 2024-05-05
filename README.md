@@ -192,10 +192,48 @@ To check the operation, you can access the _Adminer_ panel at http://localhost:1
 * [springdoc-openapi-ui (SwaggerUI for OpenApi 3)](https://github.com/springdoc/springdoc-openapi)
 
 
-## Contact
+## Additional Considerations
+### Product Catalog Microservice
+#### Products
+* _createProduct_: Added additional check that product does not exist in catalog with same name as requested in PRAC1 solution.
+* _deleteProduct_: Could not check that unit is compromised in any current or future rent as requested in PRAC1,
+because rent service is not implemented in PRAC2.
+* _findProductsByCriteria_: a single endpoint has been exposed to query by all criteria. Also added brand, model and description. 
 
+#### Category
+* _findCategoriesByCriteria_: similarly as _findProductsByCriteria_, a single endpoint has been created to be able to
+query Categories by different criteria.
 
+#### Items
+* _createItem_: As requested in PRAC1 solution, an additional check has been added to ensure that there aren't any items with 
+same serial in database already.
+* _updateItem_: New endpoint to update item is exposed to both statuses (OPERATIONAL/NON_OPERATIONAL) to a given item
+by its serial number. As requested in PRAC1 solution, an additional check has been added to ensure that product exists 
+with oposite status than the one added in the request (to avoid setting the same status again).
 
-<p align="right">(<a href="#top">ir arriba</a>)</p>
+#### Offer
+A new entity, service, repository and controller have been added as part of PRAC2.
+As requested in PRAC1 solution:
+* _createOffer_: to ensure that user exists in the system, a rest request has been added to call 
+user microservice (similarly as notification service). Also, ensured that product and category exist in the system. 
+Finally, a PENDING status has been added when users create offers by default, pending to be evaluated by administrators.
+* _findOffersByUser_: has decided to not add a check that user exists as it will simply return an empty list.
+* _evaluateOffer_: only verifies that offer exists in database beforehand, like PRAC1 contract requested. When admin  
+accepts user offer, a new item is created while reusing item service logic. Therefore, a new event is published to the
+kafka topic and only item service is responsible for that. Finally, to not break PRAC1 contract, an offer can be evaluated
+as many times as admin requests.
+
+### User Microservice
+#### User
+- _createUser_: as requested in PRAC1 solution, a validation has been added to check that email does not exist in database
+before creating a user.
+- _getUsersToAlert_: as discussed in the forum, although this operation uses _findAlertsByProductIdAndInterval_, 
+dates are not a interval but more of a specific date.
+
+#### Alert
+- _findAlertsByProductIdAndDate_: query alerts by product and a specific date, not an interval as discussed in the 
+subject forum.
+
+<p align="right">(<a href="#top">go up</a>)</p>
 
 

@@ -8,5 +8,5 @@ import lombok.Getter;
 public class CategoryCriteria {
     private String name;
     private String description;
-    private String parent;
+    private Long parent;
 }

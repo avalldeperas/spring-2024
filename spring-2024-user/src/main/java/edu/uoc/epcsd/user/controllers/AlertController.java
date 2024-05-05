@@ -68,9 +68,9 @@ public class AlertController {
     }
 
     /**
-     * Query alerts by product and date
+     * Query alerts by product and a specific date.
      *
-     * @param productId product id to filter
+     * @param productId       product id to filter
      * @param availableOnDate matching date (from = to)
      * @return a list of matching alerts
      */
@@ -88,9 +88,10 @@ public class AlertController {
     /**
      * Query alerts by user and date interval (all the alerts for the specified user where any day in the
      * interval defined in the parameters is between Alert.from and Alert.to)
-     * @param userId user id to filter
+     *
+     * @param userId   user id to filter
      * @param fromDate from date
-     * @param toDate to date
+     * @param toDate   to date
      * @return a list of matching alerts
      */
     @GetMapping("/interval")

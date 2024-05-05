@@ -48,7 +48,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<GetUserResponse[]> getUsersToAlert(
             @RequestParam @NotNull Long productId,
-            @RequestParam @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)  LocalDate availableOnDate
+            @RequestParam @NotNull @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate availableOnDate
     ) {
         log.trace("getUsersToAlert");
 

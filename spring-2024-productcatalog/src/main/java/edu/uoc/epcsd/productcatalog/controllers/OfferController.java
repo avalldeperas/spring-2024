@@ -11,9 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.util.List;
+
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 
 @Log4j2
 @RestController
@@ -34,13 +37,14 @@ public class OfferController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Long> createOffer(@RequestBody @NotNull CreateOfferRequest request) {
-        log.trace("createOffer - request {}", request);
+        log.info("createOffer - request {}", request);
 
         Offer offer = offerService.createOffer(
                 request.getCategoryId(),
                 request.getProductId(),
                 request.getSerialNumber(),
-                request.getUserId()
+                request.getUserId(),
+                request.getDailyPrice()
         );
 
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
@@ -76,7 +80,7 @@ public class OfferController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Offer> findOffersByUser(@RequestParam @NotNull Long userId) {
-        log.info("findOffersByUser - user id {}", userId);
+        log.trace("findOffersByUser - user id {}", userId);
 
         return offerService.findOffersByUser(userId);
     }

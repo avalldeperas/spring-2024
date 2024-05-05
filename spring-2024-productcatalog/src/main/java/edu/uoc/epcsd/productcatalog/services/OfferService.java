@@ -2,12 +2,9 @@ package edu.uoc.epcsd.productcatalog.services;
 
 import edu.uoc.epcsd.productcatalog.controllers.dtos.GetUserResponse;
 import edu.uoc.epcsd.productcatalog.entities.*;
-import edu.uoc.epcsd.productcatalog.kafka.KafkaConstants;
 import edu.uoc.epcsd.productcatalog.kafka.ProductMessage;
 import edu.uoc.epcsd.productcatalog.model.OfferStatus;
 import edu.uoc.epcsd.productcatalog.repositories.OfferRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -33,55 +30,58 @@ public class OfferService {
     @Autowired
     private ProductService productService;
 
-    @Autowired
-    private KafkaTemplate<String, ProductMessage> productKafkaTemplate;
-
     @Value("${userService.getUserById.url}")
     private String userServiceUrl;
 
-    private static final Logger log = LoggerFactory.getLogger(OfferService.class);
+    @Autowired
+    private ItemService itemService;
 
     public List<Offer> findAll() {
         return offerRepository.findAll();
     }
 
-    public Offer createOffer(Long categoryId, Long productId, String serialNumber, Long userId) {
+    public Offer createOffer(Long categoryId, Long productId, String serialNumber, Long userId, Double dailyPrice) {
         Long userIdFound = validateUser(userId);
         Category category = validateCategory(categoryId);
         Product product = validateProduct(productId);
 
-        Offer offer = buildOffer(category, product, serialNumber, userIdFound);
+        Offer offer = buildOffer(category, product, serialNumber, userIdFound, dailyPrice);
 
         return offerRepository.save(offer);
     }
 
     public Offer evaluateOffer(Long offerId, LocalDate date, OfferStatus status) {
-        Optional<Offer> offer = offerRepository.findById(offerId);
-        if (offer.isEmpty())
-            throw new IllegalArgumentException(String.format("Offer id %d does not exist", offerId));
+        Offer offer = getOffer(offerId);
 
-        offer.get().setStatus(status);
-        offer.get().setDate(date);
+        offer.setStatus(status);
+        offer.setDate(date);
 
-        if (status.isAccepted()) {
-            ProductMessage message = ProductMessage.builder().productId(offer.get().getProduct().getId()).build();
-            log.info("Message produced: {}", message);
-            productKafkaTemplate.send(KafkaConstants.PRODUCT_TOPIC + KafkaConstants.SEPARATOR + KafkaConstants.UNIT_AVAILABLE, message);
-        }
+        if (status.isAccepted())
+            itemService.createItem(offer.getProduct().getId(), offer.getSerialNumber());
 
-        return offerRepository.save(offer.get());
+        return offerRepository.save(offer);
     }
 
     public List<Offer> findOffersByUser(Long userId) {
         return offerRepository.findByUserId(userId);
     }
 
-    private Offer buildOffer(Category category, Product product, String serialNumber, Long userId) {
+    private Offer getOffer(Long offerId) {
+        Optional<Offer> offer = offerRepository.findById(offerId);
+        if (offer.isEmpty())
+            throw new IllegalArgumentException(String.format("Offer id %d does not exist", offerId));
+        // Could have added a check that offer status is PENDING, but didn't want to compromise PRAC1 solution contract.
+        return offer.get();
+    }
+
+    private Offer buildOffer(Category category, Product product, String serialNumber, Long userId, Double dailyPrice) {
         return Offer.builder()
                 .category(category)
                 .product(product)
                 .serialNumber(serialNumber)
                 .userId(userId)
+                .status(OfferStatus.PENDING)
+                .dailyPrice(dailyPrice)
                 .build();
     }
 
@@ -105,7 +105,7 @@ public class OfferService {
             userResponse = new RestTemplate().getForEntity(userServiceUrl, GetUserResponse.class, userId);
             return Objects.requireNonNull(userResponse.getBody()).getId();
         } catch (RestClientException e) {
-            throw new IllegalArgumentException(String.format("Could not found the userId %d", userId), e);
+            throw new IllegalArgumentException(String.format("Could not find the userId %d", userId), e);
         }
     }
 }

@@ -31,9 +31,17 @@ public class UserService {
     }
 
     public User createUser(String email, String password, String fullName, String phoneNumber) {
+        validateEmail(email);
+
         User user = User.builder().email(email).password(password).fullName(fullName).phoneNumber(phoneNumber).build();
 
         return userRepository.save(user);
+    }
+
+    private void validateEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent())
+            throw new IllegalArgumentException(String.format("A user with email '%s' already exists.",email));
     }
 
     public Set<User> getUsersToAlert(Long productId, LocalDate availableOnDate) {

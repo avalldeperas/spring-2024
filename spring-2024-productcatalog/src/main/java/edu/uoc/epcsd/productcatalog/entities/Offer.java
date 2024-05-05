@@ -30,6 +30,8 @@ public class Offer {
     private Product product;
 
     private String serialNumber;
+    @Enumerated(EnumType.STRING)
     private OfferStatus status;
     private LocalDate date;
+    private Double dailyPrice;
 }

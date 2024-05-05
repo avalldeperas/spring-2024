@@ -37,28 +37,25 @@ public class AlertService {
     }
 
     public Alert createAlert(Long productId, Long userId, LocalDate from, LocalDate to) {
-
-        Alert alert = Alert.builder().from(from).to(to).build();
-
-        Optional<User> user = userService.findById(userId);
-
-        if (user.isEmpty()) {
-            throw new IllegalArgumentException("A valid userId parameter is mandatory");
-        }
-
-        alert.setUser(user.get());
+        User user = getUser(userId);
+        Alert alert = Alert.builder().from(from).to(to).user(user).build();
 
         try {
             // verify the specified product exists in product service
             ResponseEntity<GetProductResponse> getProductResponseEntity = new RestTemplate().getForEntity(productCatalogUrl, GetProductResponse.class, productId);
-
             alert.setProductId(productId);
-
         } catch (RestClientException e) {
-            throw new IllegalArgumentException("Could not found the productId: " + productId, e);
+            throw new IllegalArgumentException("Could not find the productId: " + productId, e);
         }
 
         return alertRepository.save(alert);
+    }
+
+    private User getUser(Long userId) {
+        Optional<User> user = userService.findById(userId);
+        if (user.isEmpty())
+            throw new IllegalArgumentException("A valid userId parameter is mandatory");
+        return user.get();
     }
 
     public List<Alert> findAlertsByProductIdAndDate(Long productId, LocalDate from) {
